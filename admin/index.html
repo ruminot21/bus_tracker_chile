@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrador</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header>Administración</header>
+<div class="container">
+  <div class="card" id="adminLogin">
+    <h2>Acceso administrador</h2>
+    <input id="email" type="email" placeholder="Correo">
+    <input id="password" type="password" placeholder="Contraseña">
+    <button onclick="loginAdmin()">Ingresar</button>
+    <p id="msg" class="small"></p>
+  </div>
+
+  <div id="adminPanel" class="hidden">
+    <div class="grid">
+      <div class="card">
+        <h3>Registrar bus</h3>
+        <input id="busId" placeholder="ID, ejemplo BUS-01">
+        <input id="busPatente" placeholder="Patente">
+        <input id="busNumero" placeholder="Número interno">
+        <button onclick="saveBus()">Guardar bus</button>
+      </div>
+
+      <div class="card">
+        <h3>Registrar ruta</h3>
+        <input id="routeId" placeholder="ID, ejemplo RUTA-01">
+        <input id="routeName" placeholder="Nombre de la ruta">
+        <input id="routeOrigin" placeholder="Origen">
+        <input id="routeDestination" placeholder="Destino">
+        <button onclick="saveRoute()">Guardar ruta</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Buses registrados</h3>
+      <div id="busList"></div>
+    </div>
+
+    <div class="card">
+      <button class="secondary" onclick="auth.signOut().then(()=>location.reload())">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="../firebase-config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
