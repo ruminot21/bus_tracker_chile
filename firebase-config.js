@@ -1,16 +1,17 @@
-// Reemplaza estos datos con la configuración de tu proyecto Firebase.
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_PROYECTO.firebaseapp.com",
-  databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
-  projectId: "TU_PROYECTO",
-  storageBucket: "TU_PROYECTO.appspot.com",
-  messagingSenderId: "TU_MESSAGING_SENDER_ID",
-  appId: "TU_APP_ID"
+  apiKey: "AIzaSyANbiVrbSst4-iMwlALkBrlEs5JYpIii_0",
+  authDomain: "bus-tracker-chile.firebaseapp.com",
+  projectId: "bus-tracker-chile",
+  storageBucket: "bus-tracker-chile.firebasestorage.app",
+  messagingSenderId: "128440721323",
+  appId: "1:128440721323:web:275bd0086e125c3b6a7cee"
 };
 
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-const rtdb = firebase.database();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
