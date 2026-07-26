@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Conductor</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header>Panel del conductor</header>
+<div class="container">
+  <div class="card" id="loginCard">
+    <h2>Iniciar sesión</h2>
+    <input id="email" type="email" placeholder="Correo">
+    <input id="password" type="password" placeholder="Contraseña">
+    <button onclick="login()">Ingresar</button>
+    <p id="loginMsg" class="small"></p>
+  </div>
+
+  <div id="driverPanel" class="hidden">
+    <div class="card">
+      <h2>Mi recorrido</h2>
+      <p><strong>Bus:</strong> <span id="busName">Sin asignar</span></p>
+      <p><strong>Ruta:</strong> <span id="routeName">Sin asignar</span></p>
+      <p><strong>Estado:</strong> <span id="status" class="status offline">Detenido</span></p>
+      <button class="success" onclick="startTrip()">Iniciar recorrido</button>
+      <button class="secondary" onclick="stopTrip()">Finalizar recorrido</button>
+      <button onclick="logout()">Cerrar sesión</button>
+    </div>
+    <div class="card">
+      <p id="gpsInfo">GPS sin iniciar.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="../firebase-config.js"></script>
+<script src="driver.js"></script>
+</body>
+</html>
