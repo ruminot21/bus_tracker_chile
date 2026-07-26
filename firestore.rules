@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userRole() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol;
+    }
+
+    match /usuarios/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || userRole() == "admin");
+      allow write: if signedIn() && userRole() == "admin";
+    }
+
+    match /buses/{busId} {
+      allow read: if true;
+      allow write: if signedIn() && userRole() == "admin";
+    }
+
+    match /rutas/{rutaId} {
+      allow read: if true;
+      allow write: if signedIn() && userRole() == "admin";
+    }
+
+    match /viajes/{viajeId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && userRole() in ["admin", "conductor"];
+      allow update: if signedIn() && userRole() in ["admin", "conductor"];
+      allow delete: if signedIn() && userRole() == "admin";
+    }
+  }
+}

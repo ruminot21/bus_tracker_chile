@@ -1,0 +1,11 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": false,
+    "ubicaciones": {
+      "$busId": {
+        ".write": "auth != null"
+      }
+    }
+  }
+}
