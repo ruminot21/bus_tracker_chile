@@ -1,58 +1,167 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Administrador</title>
   <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
-<header>Administración</header>
+<header>🚌 Bus Tracker Chile · Administrador general</header>
+
 <div class="container">
-  <div class="card" id="adminLogin">
-    <h2>Acceso administrador</h2>
-    <input id="email" type="email" placeholder="Correo">
-    <input id="password" type="password" placeholder="Contraseña">
-    <button onclick="loginAdmin()">Ingresar</button>
-    <p id="msg" class="small"></p>
+  <div class="card" id="loginCard">
+    <h2>Ingreso administrador</h2>
+    <input id="loginEmail" type="email" placeholder="Correo">
+    <input id="loginPassword" type="password" placeholder="Contraseña">
+    <button id="loginButton">Ingresar</button>
+    <p id="loginMsg" class="small"></p>
   </div>
 
   <div id="adminPanel" class="hidden">
-    <div class="grid">
-      <div class="card">
-        <h3>Registrar bus</h3>
-        <input id="busId" placeholder="ID, ejemplo BUS-01">
-        <input id="busPatente" placeholder="Patente">
-        <input id="busNumero" placeholder="Número interno">
-        <button onclick="saveBus()">Guardar bus</button>
+    <div class="nav">
+      <button data-section="dashboard" class="active">Resumen</button>
+      <button data-section="empresas">Empresas</button>
+      <button data-section="conductores">Conductores</button>
+      <button data-section="buses">Buses</button>
+      <button data-section="rutas">Rutas y flota activa</button>
+      <button id="logoutButton">Salir</button>
+    </div>
+
+    <section id="dashboard" class="section">
+      <div class="grid">
+        <div class="card"><span class="small">Empresas</span><div id="countEmpresas" class="stat">0</div></div>
+        <div class="card"><span class="small">Conductores</span><div id="countConductores" class="stat">0</div></div>
+        <div class="card"><span class="small">Buses registrados</span><div id="countBuses" class="stat">0</div></div>
+        <div class="card"><span class="small">Buses activos ahora</span><div id="countActivos" class="stat">0</div></div>
       </div>
 
       <div class="card">
-        <h3>Registrar ruta</h3>
-        <input id="routeId" placeholder="ID, ejemplo RUTA-01">
-        <input id="routeName" placeholder="Nombre de la ruta">
-        <input id="routeOrigin" placeholder="Origen">
-        <input id="routeDestination" placeholder="Destino">
-        <button onclick="saveRoute()">Guardar ruta</button>
+        <b>Nuevo flujo:</b> el administrador crea la empresa y su acceso. Después registra buses,
+        rutas y conductores. Cada empresa entra en su propio panel y solo puede ver sus datos.
       </div>
-    </div>
+    </section>
 
-    <div class="card">
-      <h3>Buses registrados</h3>
-      <div id="busList"></div>
-    </div>
+    <section id="empresas" class="section hidden">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Nueva empresa y acceso</h3>
+          <input id="empresaNombre" placeholder="Nombre de la empresa">
+          <input id="empresaRut" placeholder="RUT">
+          <input id="empresaTelefono" placeholder="Teléfono">
+          <input id="empresaCorreo" type="email" placeholder="Correo de contacto">
+          <input id="empresaDireccion" placeholder="Dirección">
 
-    <div class="card">
-      <button class="secondary" onclick="auth.signOut().then(()=>location.reload())">Cerrar sesión</button>
-    </div>
+          <hr class="separator">
+          <h4>Usuario para entrar al panel de empresa</h4>
+          <input id="empresaAccessName" placeholder="Nombre del encargado">
+          <input id="empresaAccessEmail" type="email" placeholder="Correo de acceso">
+          <input id="empresaAccessPassword" type="password" minlength="6" placeholder="Contraseña, mínimo 6 caracteres">
+
+          <button id="saveEmpresaButton">Crear empresa y acceso</button>
+          <p id="empresaMsg" class="small"></p>
+
+          <div class="form-help">
+            Firebase no permite consultar una contraseña ya creada. Desde aquí puedes establecerla
+            al crear el acceso o cambiarla después, pero nunca se mostrará guardada.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Empresas agregadas</h3>
+          <p class="small">Cada tarjeta muestra sus buses, conductores, rutas y flota activa.</p>
+          <div id="empresaList" class="company-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="conductores" class="section hidden">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Crear conductor y acceso</h3>
+          <input id="conductorNombre" placeholder="Nombre completo">
+          <input id="conductorRut" placeholder="RUT">
+          <input id="conductorTelefono" placeholder="Teléfono">
+          <select id="conductorEmpresa"></select>
+          <select id="conductorBus"></select>
+          <select id="conductorRuta"></select>
+          <input id="conductorCorreo" type="email" placeholder="Correo para entrar">
+          <input id="conductorPassword" type="password" minlength="6" placeholder="Contraseña, mínimo 6 caracteres">
+          <button id="saveConductorButton">Crear conductor</button>
+          <p id="conductorMsg" class="small"></p>
+        </div>
+
+        <div class="card">
+          <h3>Conductores registrados</h3>
+          <div id="conductorList" class="table-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="buses" class="section hidden">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Nuevo bus</h3>
+          <input id="busId" placeholder="Código interno, ejemplo BUS-01">
+          <input id="busNombre" placeholder="Nombre o número, ejemplo Bus 24">
+          <input id="busPatente" placeholder="Patente">
+          <input id="busMarca" placeholder="Marca">
+          <input id="busCapacidad" type="number" min="1" placeholder="Capacidad de pasajeros">
+          <select id="busEmpresa"></select>
+          <button id="saveBusButton">Guardar bus</button>
+        </div>
+
+        <div class="card">
+          <h3>Buses registrados</h3>
+          <div id="busList" class="table-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rutas" class="section hidden">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Nueva ruta</h3>
+          <input id="rutaId" placeholder="Código, ejemplo RUTA-01">
+          <input id="rutaNombre" placeholder="Nombre de la ruta">
+          <input id="rutaOrigen" placeholder="Origen">
+          <input id="rutaDestino" placeholder="Destino">
+          <select id="rutaEmpresa"></select>
+          <button id="saveRutaButton">Guardar ruta</button>
+
+          <hr class="separator">
+          <h3>Filtrar flota</h3>
+          <select id="fleetCompanyFilter"><option value="">Todas las empresas</option></select>
+          <select id="fleetRouteFilter"><option value="">Todas las rutas</option></select>
+        </div>
+
+        <div class="card">
+          <h3>Buses activos en el mapa</h3>
+          <div id="fleetMap"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Rutas y buses activos</h3>
+        <div id="rutaList" class="table-wrap"></div>
+      </div>
+
+      <div class="card">
+        <h3>Detalle de la flota activa</h3>
+        <div id="activeFleetList" class="table-wrap"></div>
+      </div>
+    </section>
   </div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
 <script src="../firebase-config.js"></script>
-<script src="admin.js"></script>
+<script src="admin.js?v=5.0"></script>
 </body>
 </html>

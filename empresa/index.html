@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Panel de empresa</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<header>🏢 Bus Tracker Chile · Empresa</header>
+
+<div class="container">
+  <div class="card" id="loginCard">
+    <h2>Acceso de empresa</h2>
+    <input id="email" type="email" placeholder="Correo">
+    <input id="password" type="password" placeholder="Contraseña">
+    <button id="loginButton" class="blue">Ingresar</button>
+    <p id="loginMsg" class="small"></p>
+  </div>
+
+  <div id="companyPanel" class="hidden">
+    <div class="company-title card">
+      <div>
+        <div class="small">Empresa conectada</div>
+        <h2 id="companyName">Empresa</h2>
+        <div id="companyContact" class="small"></div>
+      </div>
+      <div class="company-icon-large">🏢</div>
+    </div>
+
+    <div class="nav">
+      <button data-section="dashboard" class="active">Resumen</button>
+      <button data-section="buses">Mis buses</button>
+      <button data-section="conductores">Conductores</button>
+      <button data-section="rutas">Rutas</button>
+      <button id="logoutButton">Salir</button>
+    </div>
+
+    <section id="dashboard" class="section">
+      <div class="grid">
+        <div class="card"><span class="small">Buses</span><div id="countBuses" class="stat">0</div></div>
+        <div class="card"><span class="small">Conductores</span><div id="countDrivers" class="stat">0</div></div>
+        <div class="card"><span class="small">Rutas</span><div id="countRoutes" class="stat">0</div></div>
+        <div class="card"><span class="small">Buses activos</span><div id="countActive" class="stat">0</div></div>
+      </div>
+
+      <div class="card">
+        <h3>Flota activa ahora</h3>
+        <div id="companyMap"></div>
+      </div>
+    </section>
+
+    <section id="buses" class="section hidden">
+      <div class="card">
+        <h3>Mis buses</h3>
+        <div id="busList" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <section id="conductores" class="section hidden">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Modificar conductor</h3>
+          <select id="editDriverSelect">
+            <option value="">Selecciona un conductor</option>
+          </select>
+
+          <input id="editDriverName" placeholder="Nombre completo">
+          <input id="editDriverRut" placeholder="RUT">
+          <input id="editDriverPhone" placeholder="Teléfono">
+          <input id="editDriverEmail" type="email" placeholder="Correo de acceso">
+
+          <select id="editDriverBus"></select>
+          <select id="editDriverRoute"></select>
+
+          <input id="editDriverPassword" type="password" minlength="6"
+            placeholder="Nueva contraseña, dejar vacío para conservarla">
+
+          <button id="updateDriverButton" class="blue">Guardar cambios</button>
+          <p id="driverEditMsg" class="small"></p>
+
+          <div class="form-help">
+            La contraseña actual no puede mostrarse. Puedes escribir una nueva para reemplazarla.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Conductores de la empresa</h3>
+          <div id="driverList" class="table-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rutas" class="section hidden">
+      <div class="card">
+        <h3>Rutas y buses que están en recorrido</h3>
+        <div id="routeList" class="table-wrap"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+<script src="../firebase-config.js"></script>
+<script src="company.js?v=5.0"></script>
+</body>
+</html>

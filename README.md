@@ -1,77 +1,88 @@
-# Bus Tracker Chile
+# Bus Tracker Chile v5 — Acceso para empresas
 
-Primera versión de un sistema web para mostrar la ubicación GPS de buses en tiempo real.
+## Cambios incluidos
 
-## Incluye
+### Administrador general
+- Crea una empresa junto con su correo y contraseña de acceso.
+- Muestra las empresas agregadas en tarjetas separadas.
+- Cada tarjeta muestra:
+  - buses;
+  - conductores;
+  - rutas;
+  - buses activos;
+  - correo de contacto;
+  - correo de acceso.
+- Puede configurar o cambiar el acceso de una empresa existente.
+- Crea conductores con correo y contraseña.
+- Mantiene la gestión de buses, rutas y flota activa.
 
-- Panel de conductor con inicio de sesión.
-- Envío automático de ubicación GPS.
-- Mapa público para clientes.
-- Panel básico de administración.
-- Registro de buses y rutas.
-- Reglas iniciales para Firestore y Realtime Database.
+### Panel de empresa
+La nueva dirección es:
 
-## 1. Crear proyecto Firebase
-
-1. Entra a Firebase Console.
-2. Crea un proyecto.
-3. Activa Authentication con correo y contraseña.
-4. Crea Firestore Database.
-5. Crea Realtime Database.
-6. Copia la configuración web en `firebase-config.js`.
-
-## 2. Crear usuarios
-
-Los usuarios se crean primero en Firebase Authentication.
-
-Después crea un documento en Firestore:
-
-Colección: `usuarios`
-
-ID del documento: UID del usuario de Authentication.
-
-Ejemplo de administrador:
-
-```json
-{
-  "nombre": "Administrador",
-  "rol": "admin"
-}
+```text
+/empresa/
 ```
 
-Ejemplo de conductor:
+Cada empresa puede:
+- iniciar sesión con el acceso creado por el administrador;
+- ver únicamente sus buses;
+- ver sus buses activos en el mapa;
+- revisar sus conductores;
+- cambiar nombre, RUT, teléfono, correo, bus y ruta del conductor;
+- establecer una nueva contraseña para el conductor;
+- revisar sus rutas y los buses activos en cada ruta.
 
-```json
-{
-  "nombre": "Juan Pérez",
-  "rol": "conductor",
-  "busId": "BUS-01",
-  "busNombre": "Bus 01",
-  "rutaId": "RUTA-01",
-  "rutaNombre": "Centro - Terminal"
-}
-```
+### Seguridad
+- Las contraseñas nunca se guardan en Firestore.
+- Firebase no permite consultar una contraseña existente.
+- La empresa puede establecer una nueva contraseña, pero no ver la anterior.
+- Los cambios de correo y contraseña se realizan desde Cloud Functions usando Firebase Admin SDK.
 
-## 3. Reglas
+## Paso obligatorio: desplegar Cloud Functions
 
-- Copia `firestore.rules` en las reglas de Firestore.
-- Copia `database.rules.json` en las reglas de Realtime Database.
+La creación y modificación segura de usuarios requiere Cloud Functions.
 
-## 4. Publicación
-
-Puedes publicar con Firebase Hosting:
+Desde esta carpeta ejecuta:
 
 ```bash
 npm install -g firebase-tools
 firebase login
-firebase init hosting
-firebase deploy
+firebase use bus-tracker-chile
+cd functions
+npm install
+cd ..
+firebase deploy --only functions,firestore:rules,database
 ```
 
-Usa esta carpeta como carpeta pública o copia sus archivos dentro de `public`.
+Después puedes ejecutar la aplicación localmente:
 
-## Aviso importante
+```bash
+python3 -m http.server 8000
+```
 
-El GPS del navegador funciona mejor cuando la página está publicada con HTTPS.
-En algunos teléfonos, el sistema puede detener la ubicación si se apaga la pantalla.
-Para una versión profesional conviene desarrollar una aplicación Android dedicada.
+Direcciones:
+
+```text
+http://localhost:8000/admin/
+http://localhost:8000/empresa/
+http://localhost:8000/conductor/
+http://localhost:8000/cliente/
+```
+
+## Importante sobre el plan de Firebase
+
+Firebase exige el plan Blaze para desplegar Cloud Functions en producción.
+El plan Blaze es pago por uso y Cloud Functions mantiene cuotas de uso sin costo,
+pero debes vincular una cuenta de facturación antes de desplegar.
+
+## Empresas que ya existían
+
+En el administrador abre **Empresas** y pulsa **Configurar acceso** en la tarjeta
+de la empresa. Allí puedes crear su correo y contraseña sin volver a registrar
+la empresa.
+
+## Configuración de Firebase
+
+Esta versión conserva `firebase-config.js`. Si aparece el error
+`auth/api-key-not-valid`, copia dentro de esta carpeta el archivo
+`firebase-config.js` de la versión que ya te funciona.

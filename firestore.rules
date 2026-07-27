@@ -1,4 +1,5 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -6,30 +7,85 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function userRole() {
-      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol;
+    function profileExists() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/usuarios/$(request.auth.uid));
+    }
+
+    function profile() {
+      return get(
+        /databases/$(database)/documents/usuarios/$(request.auth.uid)
+      ).data;
+    }
+
+    function isAdmin() {
+      return profileExists() && profile().rol == "admin";
+    }
+
+    function isCompany() {
+      return profileExists() && profile().rol == "empresa";
+    }
+
+    function isDriver() {
+      return profileExists() && profile().rol == "conductor";
+    }
+
+    function sameCompany(companyId) {
+      return isCompany() && profile().empresaId == companyId;
     }
 
     match /usuarios/{userId} {
-      allow read: if signedIn() && (request.auth.uid == userId || userRole() == "admin");
-      allow write: if signedIn() && userRole() == "admin";
+      allow read: if signedIn() && (
+        request.auth.uid == userId ||
+        isAdmin() ||
+        (
+          isCompany() &&
+          resource.data.empresaId == profile().empresaId
+        )
+      );
+
+      // Las cuentas y cambios sensibles se realizan mediante Cloud Functions.
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin();
+    }
+
+    match /empresas/{companyId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
     }
 
     match /buses/{busId} {
       allow read: if true;
-      allow write: if signedIn() && userRole() == "admin";
+      allow create, delete: if isAdmin();
+
+      allow update: if isAdmin() ||
+        (
+          isDriver() &&
+          profile().busId == busId
+        );
     }
 
-    match /rutas/{rutaId} {
+    match /rutas/{routeId} {
       allow read: if true;
-      allow write: if signedIn() && userRole() == "admin";
+      allow create, update, delete: if isAdmin();
     }
 
-    match /viajes/{viajeId} {
-      allow read: if signedIn();
-      allow create: if signedIn() && userRole() in ["admin", "conductor"];
-      allow update: if signedIn() && userRole() in ["admin", "conductor"];
-      allow delete: if signedIn() && userRole() == "admin";
+    match /incidencias/{incidentId} {
+      allow create: if isDriver() || isAdmin();
+
+      allow read: if isAdmin() ||
+        (
+          isCompany() &&
+          resource.data.empresaId == profile().empresaId
+        );
+
+      allow update: if isAdmin() ||
+        (
+          isCompany() &&
+          resource.data.empresaId == profile().empresaId
+        );
+
+      allow delete: if isAdmin();
     }
   }
 }

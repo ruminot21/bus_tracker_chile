@@ -1,26 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ubicación de buses</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Buses en tiempo real</title>
   <link rel="stylesheet" href="../assets/styles.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
-<header>Ubicación de buses</header>
+<header>🚌 Bus Tracker Chile · Buses en tiempo real</header>
+
 <div class="container">
   <div class="card">
-    <h2>Buses activos</h2>
-    <p class="small">Toca un bus en el mapa para ver su información.</p>
+    <div class="filters">
+      <select id="companyFilter">
+        <option value="">Todas las empresas</option>
+      </select>
+      <input id="search" placeholder="Buscar empresa, bus, patente o ruta">
+    </div>
+
+    <p class="small">
+      <span id="connectionStatus">Conectando con Firebase…</span><br>
+      <span id="activeCount">0</span> buses activos en este momento.
+    </p>
   </div>
+
   <div id="map"></div>
+  <div id="busList" class="bus-list"></div>
 </div>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+
+<!-- IMPORTANTE: este archivo faltaba y detenía firebase-config.js -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script src="../firebase-config.js"></script>
-<script src="client.js"></script>
+<script src="client.js?v=4.1"></script>
 </body>
 </html>
